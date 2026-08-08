@@ -1,6 +1,5 @@
 package com.example.patientservice.dto.patient;
 
-import com.example.patientservice.model.Patient;
 import com.example.patientservice.model.enums.Gender;
 import com.example.patientservice.model.enums.PatientStatus;
 
@@ -21,20 +20,4 @@ public record PatientResponse(
         PatientStatus status
 
 ) {
-    public static PatientResponse fromEntity(Patient patient) {
-        return new PatientResponse(
-                patient.getPatientId(),
-                patient.getFirstName(),
-                patient.getLastName(),
-                patient.getEmail(),
-                patient.getPhoneNumber(),
-                patient.getDateOfBirth(),
-                patient.getGender(),
-                patient.getAddress(),
-                patient.getCreatedAt(),
-                patient.getUpdatedAt(),
-                patient.getStatus()
-
-        );
-    }
 }
