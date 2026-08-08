@@ -12,4 +12,12 @@ public class ApiResponseUtil {
                 .data(data)
                 .build();
     }
+
+    public static <T> ApiResponse<T> created(String message, T data) {
+        return ApiResponse.<T>builder()
+                .success(true)
+                .message(message)
+                .data(data)
+                .build();
+    }
 }

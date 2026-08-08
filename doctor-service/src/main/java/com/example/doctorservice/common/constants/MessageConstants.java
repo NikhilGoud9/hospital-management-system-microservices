@@ -4,15 +4,13 @@ public final class MessageConstants {
 
     private MessageConstants() {}
 
-    public static final String PATIENT_CREATED =
-            "Patient created successfully";
+    public static final String DOCTOR_CREATED_SUCCESS = "Doctor created successfully";
 
-    public static final String PATIENT_UPDATED =
-            "Patient updated successfully";
+    public static final String DOCTOR_FETCHED_SUCCESS = "Doctor fetched successfully";
 
-    public static final String PATIENT_FETCHED =
-            "Patient fetched successfully";
+    public static final String DOCTORS_FETCHED_SUCCESS = "Doctors fetched successfully";
 
-    public static final String PATIENT_DELETED =
-            "Patient deleted successfully";
+    public static final String DOCTOR_UPDATED_SUCCESS = "Doctor updated successfully";
+
+    public static final String DOCTOR_DEACTIVATED_SUCCESS = "Doctor deactivated successfully";
 }
