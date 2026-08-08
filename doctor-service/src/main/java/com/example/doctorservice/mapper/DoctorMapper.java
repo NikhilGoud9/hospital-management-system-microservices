@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DoctorMapper {
     public Doctor toEntity(DoctorRequest request) {
-        
+
         Doctor doctor = new Doctor();
 
         doctor.setFirstName(request.firstName());
