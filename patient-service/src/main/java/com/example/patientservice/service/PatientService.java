@@ -19,7 +19,7 @@ public interface PatientService {
 
     PatientResponse updatePatient(Long id, PatientRequest request);
 
-    void deletePatient(Long id);
+    void deactivatePatient(Long id);
 
     Page<PatientResponse> searchPatients(String keyword, Pageable pageable);
 

@@ -1,7 +1,5 @@
 package com.example.patientservice.service.impl;
 
-
-
 import com.example.patientservice.dto.patient.PatientRequest;
 import com.example.patientservice.dto.patient.PatientResponse;
 import com.example.patientservice.exception.DuplicatePatientException;
@@ -21,23 +19,26 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
+@Transactional(readOnly = true)
 public class PatientServiceImpl implements PatientService {
 
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
 
+    @Transactional
     @Override
     public PatientResponse savePatient(PatientRequest request) {
 
         log.info("Creating patient with email {}", request.email());
 
         if (patientRepository.existsByEmail(request.email())) {
-            throw new DuplicatePatientException("Email already exists");
+            throw new DuplicatePatientException(
+                    "Patient already exists with email: " + request.email());
         }
 
         if (patientRepository.existsByPhoneNumber(request.phoneNumber())) {
-            throw new DuplicatePatientException("Phone number already exists");
+            throw new DuplicatePatientException(
+                    "Patient already exists with phone number: " + request.phoneNumber());
         }
 
         Patient patient = patientMapper.toEntity(request);
@@ -50,17 +51,14 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public PatientResponse getPatientById(Long id) {
 
-        Patient patient = patientRepository.findById(id)
-                .orElseThrow(() -> new PatientNotFoundException(id));
+        log.info("Fetching patient with id {}", id);
 
-        return patientMapper.toResponse(patient);
+        return patientMapper.toResponse(getPatient(id));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<PatientResponse> getAllPatients(Pageable pageable) {
 
         log.info("Fetching patients page {}", pageable.getPageNumber());
@@ -69,49 +67,53 @@ public class PatientServiceImpl implements PatientService {
                 .map(patientMapper::toResponse);
     }
 
+    @Transactional
     @Override
-    public PatientResponse updatePatient(Long id,
-                                         PatientRequest request) {
+    public PatientResponse updatePatient(Long id, PatientRequest request) {
 
-        Patient patient = patientRepository.findById(id)
-                .orElseThrow(() -> new PatientNotFoundException(id));
+        log.info("Updating patient {}", id);
+
+        Patient patient = getPatient(id);
 
         if (!patient.getEmail().equals(request.email())
                 && patientRepository.existsByEmail(request.email())) {
 
-            throw new DuplicatePatientException("Email already exists");
+            throw new DuplicatePatientException(
+                    "Patient already exists with email: " + request.email());
         }
 
         if (!patient.getPhoneNumber().equals(request.phoneNumber())
                 && patientRepository.existsByPhoneNumber(request.phoneNumber())) {
 
-            throw new DuplicatePatientException("Phone number already exists");
+            throw new DuplicatePatientException(
+                    "Patient already exists with phone number: " + request.phoneNumber());
         }
 
         patientMapper.updateEntity(request, patient);
 
         Patient updatedPatient = patientRepository.save(patient);
 
-        log.info("Patient {} updated successfully", id);
+        log.info("Patient updated successfully with id {}", id);
 
         return patientMapper.toResponse(updatedPatient);
     }
 
+    @Transactional
     @Override
-    public void deletePatient(Long id) {
+    public void deactivatePatient(Long id) {
 
-        Patient patient = patientRepository.findById(id)
-                .orElseThrow(() -> new PatientNotFoundException(id));
+        log.info("Deactivating patient {}", id);
+
+        Patient patient = getPatient(id);
 
         patient.setStatus(PatientStatus.INACTIVE);
 
         patientRepository.save(patient);
 
-        log.info("Patient {} deactivated successfully", id);
+        log.info("Patient deactivated successfully {}", id);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<PatientResponse> searchPatients(String keyword,
                                                 Pageable pageable) {
 
@@ -121,4 +123,9 @@ public class PatientServiceImpl implements PatientService {
                 .map(patientMapper::toResponse);
     }
 
+    private Patient getPatient(Long id) {
+
+        return patientRepository.findById(id)
+                .orElseThrow(() -> new PatientNotFoundException(id));
+    }
 }
