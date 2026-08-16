@@ -7,6 +7,7 @@ import com.example.patientservice.dto.patient.PatientResponse;
 import com.example.patientservice.service.PatientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/patients")
 @RequiredArgsConstructor
+@Slf4j
 public class PatientController {
 
     private final PatientService patientService;
@@ -23,6 +25,7 @@ public class PatientController {
     @PostMapping
     public ResponseEntity<ApiResponse<PatientResponse>> createPatient(
             @Valid @RequestBody PatientRequest request) {
+
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponseUtil.success(
@@ -34,7 +37,8 @@ public class PatientController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<PatientResponse>> getPatient(
             @PathVariable Long id) {
-
+        log.info("reached");
+        log.info(String.valueOf(patientService.getPatientById(id)));
         return ResponseEntity.ok(
                 ApiResponseUtil.success(
                         "Patient fetched successfully",
